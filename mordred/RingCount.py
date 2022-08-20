@@ -115,9 +115,9 @@ class RingCount(RingCountBase):
             attrs.append("F")
 
         if self._aromatic is True:
-            attrs.append("a")
+            attrs.append("arom")
         elif self._aromatic is False:
-            attrs.append("A")
+            attrs.append("aliph")
 
         if self._hetero is True:
             attrs.append("H")
