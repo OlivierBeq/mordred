@@ -7,6 +7,10 @@ from contextlib import contextmanager
 from multiprocessing import cpu_count
 from distutils.version import StrictVersion
 
+import numpy as np
+import pandas as pd
+
+
 from .._util import Capture, DummyBar
 from ..error import Error, Missing, MultipleFragments, DuplicatedDescriptorName
 from .result import Result
@@ -380,7 +384,7 @@ class Calculator(object):
                 mols, nproc, nmols=nmols, quiet=quiet, ipynb=ipynb, id=id
             )
 
-    def pandas(self, mols, nproc=None, nmols=None, quiet=False, ipynb=False, id=-1):
+    def pandas(self, mols, nproc=None, nmols=None, quiet=False, ipynb=False, id=-1, dtype=np.float32):
         r"""Calculate descriptors over mols.
 
         Returns:
@@ -394,11 +398,17 @@ class Calculator(object):
         else:
             index = None
 
-        return MordredDataFrame(
+        descs = MordredDataFrame(
             (list(r) for r in self.map(mols, nproc, nmols, quiet, ipynb, id)),
             columns=[str(d) for d in self.descriptors],
             index=index,
         )
+
+        # Convert to pandas and replace missing & undefined values by NaNs
+        descs = pd.DataFrame(descs.fill_missing(np.NAN)).copy()
+        descs = descs.astype(dtype).replace([np.inf, -np.inf], np.NAN)
+
+        return descs
 
 
 def get_descriptors_from_module(mdl, submodule=False):
