@@ -2,6 +2,8 @@ from itertools import islice
 from collections import deque
 from multiprocessing import Pool, Manager
 
+from numpy import warnings
+
 from .._util import Capture
 from .context import Context
 
@@ -13,6 +15,7 @@ def worker(calc_proxy, cxt):
     if calculator is None:
         calculator = calc_proxy[0]
 
+    warnings.filterwarnings('ignore')
     with Capture() as capture:
         r = list(calculator._calculate(cxt))
 
