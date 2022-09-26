@@ -59,25 +59,6 @@ class DummyBar(object):
         print(s, file=file, end=end)  # noqa: T003
 
 
-class NotebookWrapper(object):
-    def __init__(self, **kwargs):
-        from tqdm import tqdm_notebook
-
-        self.bar = tqdm_notebook(**kwargs)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args):
-        pass
-
-    def update(self, *args, **kwargs):
-        self.bar.update(*args, **kwargs)
-
-    def write(self, *args, **kwargs):
-        self.bar.update(*args, **kwargs)
-
-
 def PathType(string):
     if not os.path.isfile(string):
         raise ValueError("file not exists: {}".format(string))

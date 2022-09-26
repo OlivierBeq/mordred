@@ -19,10 +19,9 @@ from .._version import __version__
 from .descriptor import Descriptor, MissingValueException, is_descriptor_class
 
 try:
-    from tqdm import tqdm
-    from .._util import NotebookWrapper
+    from tqdm.auto import tqdm
 except ImportError:
-    tqdm = NotebookWrapper = DummyBar
+    tqdm = DummyBar
 
 
 class Calculator(object):
@@ -296,8 +295,8 @@ class Calculator(object):
     def _wrap_result(self, mol, r):
         return Result(mol, r, self._descriptors)
 
-    def _serial(self, mols, nmols, quiet, ipynb, id):
-        with self._progress(quiet, nmols, ipynb) as bar:
+    def _serial(self, mols, quiet, id, **kwargs):
+        with self._progress(quiet, **kwargs) as bar:
             for m in mols:
                 with Capture() as capture:
                     r = self._wrap_result(
@@ -313,20 +312,18 @@ class Calculator(object):
 
                 yield r
                 bar.update()
+            if hasattr(bar, 'close'):
+                bar.close()
 
     @contextmanager
-    def _progress(self, quiet, total, ipynb):
-        args = {"dynamic_ncols": True, "leave": True, "total": total}
-
+    def _progress(self, quiet, **kwargs):
         if quiet:
             Bar = DummyBar
-        elif ipynb:
-            Bar = NotebookWrapper
         else:
             Bar = tqdm
 
         try:
-            with Bar(**args) as self._progress_bar:
+            with Bar(**kwargs) as self._progress_bar:
                 yield self._progress_bar
         finally:
             if hasattr(self, "_progress_bar"):
@@ -351,7 +348,7 @@ class Calculator(object):
 
         print(s, file=file, end="\n")  # noqa: T003
 
-    def map(self, mols, nproc=None, nmols=None, quiet=False, ipynb=False, id=-1):
+    def map(self, mols, nproc=None, quiet=False, id=-1, **kwargs):
         r"""Calculate descriptors over mols.
 
         Parameters:
@@ -359,11 +356,7 @@ class Calculator(object):
 
             nproc(int): number of process to use. default: multiprocessing.cpu_count()
 
-            nmols(int): number of all mols to use in progress-bar. default: mols.__len__()
-
             quiet(bool): don't show progress bar. default: False
-
-            ipynb(bool): use ipython notebook progress bar. default: False
 
             id(int): conformer id to use. default: -1.
 
@@ -374,17 +367,18 @@ class Calculator(object):
         if nproc is None:
             nproc = cpu_count()
 
-        if hasattr(mols, "__len__"):
-            nmols = len(mols)
+        if hasattr(mols, "__len__") and 'total' not in kwargs.keys():
+            kwargs['total'] = len(mols)
+
 
         if nproc == 1:
-            return self._serial(mols, nmols=nmols, quiet=quiet, ipynb=ipynb, id=id)
+            return self._serial(mols, quiet=quiet, id=id, **kwargs)
         else:
             return self._parallel(
-                mols, nproc, nmols=nmols, quiet=quiet, ipynb=ipynb, id=id
+                mols, nproc, quiet=quiet, id=id, **kwargs
             )
 
-    def pandas(self, mols, nproc=None, nmols=None, quiet=False, ipynb=False, id=-1, dtype=np.float32):
+    def pandas(self, mols, nproc=None, quiet=False, id=-1, dtype=np.float32, **kwargs):
         r"""Calculate descriptors over mols.
 
         Returns:
@@ -399,7 +393,7 @@ class Calculator(object):
             index = None
 
         descs = MordredDataFrame(
-            (list(r) for r in self.map(mols, nproc, nmols, quiet, ipynb, id)),
+            (list(r) for r in self.map(mols, nproc, quiet, id, **kwargs)),
             columns=[str(d) for d in self.descriptors],
             index=index,
         )

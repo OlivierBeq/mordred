@@ -77,8 +77,8 @@ class MolIterator(object):
     next = __next__
 
 
-def parallel(calc, mols, nproc, nmols, quiet, ipynb, id):
-    with MolPool(calc, nproc) as pool, calc._progress(quiet, nmols, ipynb) as bar:
+def parallel(calc, mols, nproc, quiet, id, **kwargs):
+    with MolPool(calc, nproc) as pool, calc._progress(quiet, **kwargs) as bar:
         for mol, (r, err) in pool.map(mols, id):
             for e in err:
                 e = e.rstrip()
