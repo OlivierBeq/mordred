@@ -378,12 +378,18 @@ class Calculator(object):
                 mols, nproc, quiet=quiet, id=id, **kwargs
             )
 
-        r"""Calculate descriptors over mols.
-
-        Returns:
-            pandas.DataFrame
-
     def pandas(self, mols, conf_id=-1, decimals=3, fill_na=0, nproc=None, quiet=False, dtype=np.float32, **kwargs):
+        """Calculate descritprs over the specified molecules.
+
+        :param mols: molecules
+        :param conf_id: conformer index to be considered when computing 3D descriptors
+        :param decimals: number of decimals to round descriptors down to
+        :param fill_na: value to fill NaN values by
+        :param nproc: number of parallel processes
+        :param quiet: should progress not be reported
+        :param dtype: data type to determine extreme values
+        :param kwargs: arguments to be passed to tqdm for the progress bar
+        :return: a pandas.DataFrame of containing the molecular descriptors
         """
         from .pandas_module import MordredDataFrame, Series
 
