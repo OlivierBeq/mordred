@@ -400,6 +400,7 @@ class Calculator(object):
 
         # Convert to pandas and replace missing & undefined values by NaNs
         descs = pd.DataFrame(descs.fill_missing(np.NAN)).copy()
+        # Convert absurdly high values to NaNs
         descs = descs.astype(dtype).replace([np.inf, -np.inf], np.NAN)
 
         return descs
