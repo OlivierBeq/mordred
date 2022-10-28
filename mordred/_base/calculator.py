@@ -378,12 +378,12 @@ class Calculator(object):
                 mols, nproc, quiet=quiet, id=id, **kwargs
             )
 
-    def pandas(self, mols, nproc=None, quiet=False, id=-1, dtype=np.float32, **kwargs):
         r"""Calculate descriptors over mols.
 
         Returns:
             pandas.DataFrame
 
+    def pandas(self, mols, conf_id=-1, decimals=3, fill_na=0, nproc=None, quiet=False, dtype=np.float32, **kwargs):
         """
         from .pandas_module import MordredDataFrame, Series
 
@@ -393,7 +393,7 @@ class Calculator(object):
             index = None
 
         descs = MordredDataFrame(
-            (list(r) for r in self.map(mols, nproc, quiet, id, **kwargs)),
+            (list(r) for r in self.map(mols, nproc, quiet, conf_id, **kwargs)),
             columns=[str(d) for d in self.descriptors],
             index=index,
         )
@@ -402,6 +402,12 @@ class Calculator(object):
         descs = pd.DataFrame(descs.fill_missing(np.NAN)).copy()
         # Convert absurdly high values to NaNs
         descs = descs.astype(dtype).replace([np.inf, -np.inf], np.NAN)
+        # Fill missiing values
+        descs = descs.fillna(fill_na)
+        # Round to specified decimals
+        descs = descs.astype(float).round(decimals=decimals)
+        # Decrease memory footprint
+        descs = descs.convert_dtypes()
 
         return descs
 
