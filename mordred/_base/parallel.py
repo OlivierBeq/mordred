@@ -1,8 +1,8 @@
+import warnings
 from itertools import islice
 from collections import deque
 from multiprocessing import Pool, Manager
 
-from numpy import warnings
 
 from .._util import Capture
 from .context import Context
