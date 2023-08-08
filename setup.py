@@ -36,7 +36,9 @@ setup(
     license="BSD-3-Clause",
     author="Hirotomo Moriwaki",
     author_email="philopon.dependence@gmail.com",
-    url="https://github.com/mordred-descriptor/mordred",
+    maintainer="Olivier J. M. Béquignon",
+    maintainer_email="olivier.bequignon.maintainer@gmail.com",
+    url="https://github.com/OlivierBeq/mordred",
     platforms=["any"],
     keywords="QSAR chemoinformatics",
     packages=find_packages(),
@@ -46,6 +48,6 @@ setup(
     },
     install_requires=install_requires,
     tests_require=["nose==1.*", "PyYaml>=4.2b1"],
-    extras_require={"full": ["pandas", "tqdm"]},
+    extras_require={"mordred": ["pandas", "tqdm", "rdkit"]},
     cmdclass={"test": None},
 )
