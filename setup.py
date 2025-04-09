@@ -1,10 +1,11 @@
 import io
 import os
 import sys
+from pathlib import Path
 
 from setuptools import setup, find_packages
 
-install_requires = ["six==1.*", "numpy==1.*", "networkx==2.*", 'pandas>=1.0.0', 'rdkit', 'tqdm']
+install_requires = ["six==1.*", "numpy>=2.0.0", "networkx==2.*", 'pandas>=1.0.0', 'rdkit', 'tqdm']
 
 if sys.version_info < (3, 4, 0):
     install_requires.append("enum34")
@@ -29,10 +30,11 @@ with io.open(fndoc, mode="r", encoding="utf-8") as fd:
     README_rst = fd.read()
 
 setup(
-    name="mordred",
+    name="mordred-ojmb",
     version=get_version(),
     description="molecular descriptor calculator",
-    long_description=README_rst,
+    long_description= README_rst,
+    long_description_content_type='text/x-rst',
     license="BSD-3-Clause",
     author="Hirotomo Moriwaki",
     author_email="philopon.dependence@gmail.com",

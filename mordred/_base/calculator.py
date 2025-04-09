@@ -405,9 +405,9 @@ class Calculator(object):
         )
 
         # Convert to pandas and replace missing & undefined values by NaNs
-        descs = pd.DataFrame(descs.fill_missing(np.NAN)).copy()
+        descs = pd.DataFrame(descs.fill_missing(np.nan)).copy()
         # Convert absurdly high values to NaNs
-        descs = descs.astype(dtype).replace([np.inf, -np.inf], np.NAN)
+        descs = descs.astype(dtype).replace([np.inf, -np.inf], np.nan)
         # Fill missiing values
         descs = descs.fillna(fill_na)
         # Round to specified decimals

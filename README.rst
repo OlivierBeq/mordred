@@ -45,7 +45,7 @@ pip
 .. code:: console
 
     pip install https://github.com/OlivierBeq/mordred/tarball/master
-           
+
 Testing the installation
 ------------------------
 
@@ -54,7 +54,7 @@ Testing the installation
     python -m mordred.tests
 
 Python examples
---------
+---------------
 
 .. code:: python
 
